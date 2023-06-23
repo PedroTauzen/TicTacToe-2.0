@@ -1,8 +1,16 @@
 package pt.ipbeja.po2.tictactoe.gui;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.GridPane;
-import pt.ipbeja.po2.tictactoe.model.TicTacToeGame;
-import pt.ipbeja.po2.tictactoe.model.View;
+import javafx.stage.FileChooser;
+import pt.ipbeja.po2.tictactoe.model.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Creates the Board of the Game
@@ -17,5 +25,114 @@ public class TicTacToeBoard extends GridPane implements View {
 
     public TicTacToeBoard(TicTacToeGame game) {
         this.game = game;
+        this.game.setGameView(this);
+        this.game.startGame();
     }
+
+    @Override
+    public void onBoardMarkChanged(Mark place, Position position) {
+        int row = position.row();
+        int col = position.col();
+        TicTacToeButton button = buttons[row][col];
+        button.setPlace(place);
+    }
+
+    @Override
+    public void onBoardCreated(Mark[][] board) {
+        int rows = board.length;
+        int cols = board[0].length;
+        getChildren().clear(); // redraw buttons
+        //ButtonHandler handler = new ButtonHandler(); // to be used with class ButtonHandler
+        EventHandler<ActionEvent> handler = event -> {
+            TicTacToeButton source = (TicTacToeButton) event.getSource();
+            Position position = getPosition(source);
+            TicTacToeBoard.this.game.positionSelected(position);
+            // ou apenas this.game.positionSelected(position);
+        };
+        this.buttons = new TicTacToeButton[rows][cols];
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                TicTacToeButton button = new TicTacToeButton();
+                button.setOnAction(handler);
+                add(button, col, row);
+                buttons[row][col] = button;
+            }
+        }
+    }
+
+    @Override
+    public void onBoardChanged(Mark[][] board) {
+        // ignorado aqui, mas útil na text user interface
+    }
+
+
+    @Override
+    public void onGameWon(Player player) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "O jogador " + player + " venceu!");
+        alert.showAndWait();
+        game.startGame();
+    }
+
+    @Override
+    public void onGameDraw() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "O jogo terminou empatado.");
+        alert.showAndWait();
+        game.startGame();
+    }
+
+    private void setButtonsHighlighted(List<Position> selectedPositions, boolean highlighted) {
+        for (Position position : selectedPositions) {
+            TicTacToeButton button = buttons[position.row()][position.col()];
+            button.setHighlighted(highlighted);
+        }
+    }
+
+    /**
+     * Get node position in gridpane
+     * @param node node to get position
+     * @return node position
+     */
+    private Position getPosition(Node node) {
+        // or you could store the coordinates in the TicTacToeButton, as we did in the first versions
+        Integer row = GridPane.getRowIndex(node);
+        Integer col = GridPane.getColumnIndex(node);
+        return new Position(row, col);
+    }
+
+    class ButtonHandler implements EventHandler<ActionEvent> {
+
+        @Override
+        public void handle(ActionEvent event) {
+            TicTacToeButton source = (TicTacToeButton) event.getSource();
+            Position position = getPosition(source);
+            TicTacToeBoard.this.game.positionSelected(position);
+            // ou apenas game.positionSelected(position);
+        }
+    }
+
+    private void handleLoadBoard() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Selecione um arquivo de tabuleiro");
+        File file = fileChooser.showOpenDialog(getScene().getWindow());
+        if (file != null) {
+            try {
+                Mark[][] board = pt.ipbeja.po2.tictactoe.model.FileBoardLoader.loadBoardFromFile(file);
+                game.setBoard(board);
+            } catch (IOException e) {
+                showAlert("Erro ao carregar o arquivo.");
+            }
+        }
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, message);
+        alert.showAndWait();
+    }
+
+    public void showLoadBoardButton() {
+        TicTacToeButton loadButton = new TicTacToeButton("Load Board");
+        loadButton.setOnAction(event -> handleLoadBoard());
+        add(loadButton, 0, game.getBoardSize());
+    }
+
 }
