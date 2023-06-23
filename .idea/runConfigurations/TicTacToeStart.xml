@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="TicTacToeStart" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="pt.ipbeja.po2.tictactoe.gui.TicTacToeStart" />
+    <module name="TicTacToe" />
+    <option name="VM_PARAMETERS" value="--module-path C:\src\javafx-sdk-19\lib --add-modules=javafx.controls" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
