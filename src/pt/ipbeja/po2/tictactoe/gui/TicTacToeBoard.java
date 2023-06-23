@@ -99,7 +99,7 @@ public class TicTacToeBoard extends GridPane implements View {
         return new Position(row, col);
     }
 
-    class ButtonHandler implements EventHandler<ActionEvent> {
+    /*class ButtonHandler implements EventHandler<ActionEvent> {
 
         @Override
         public void handle(ActionEvent event) {
@@ -108,31 +108,6 @@ public class TicTacToeBoard extends GridPane implements View {
             TicTacToeBoard.this.game.positionSelected(position);
             // ou apenas game.positionSelected(position);
         }
-    }
-
-    private void handleLoadBoard() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Selecione um arquivo de tabuleiro");
-        File file = fileChooser.showOpenDialog(getScene().getWindow());
-        if (file != null) {
-            try {
-                Mark[][] board = pt.ipbeja.po2.tictactoe.model.FileBoardLoader.loadBoardFromFile(file);
-                game.setBoard(board);
-            } catch (IOException e) {
-                showAlert("Erro ao carregar o arquivo.");
-            }
-        }
-    }
-
-    private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR, message);
-        alert.showAndWait();
-    }
-
-    public void showLoadBoardButton() {
-        TicTacToeButton loadButton = new TicTacToeButton("Load Board");
-        loadButton.setOnAction(event -> handleLoadBoard());
-        add(loadButton, 0, game.getBoardSize());
-    }
+    }*/
 
 }
