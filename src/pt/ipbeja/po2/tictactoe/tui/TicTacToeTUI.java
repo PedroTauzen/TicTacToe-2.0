@@ -39,7 +39,7 @@ public class TicTacToeTUI implements View {
         if (answer.equalsIgnoreCase("y")) {
             boolean loaded = false;
             while (!loaded) {
-                loaded = loadBoardFromFile();
+                //loaded = loadBoardFromFile();
                 if (!loaded) {
                     System.out.println("Error loading the file. Please try again.");
                 }
@@ -125,7 +125,7 @@ public class TicTacToeTUI implements View {
         }
     }
 
-    private boolean loadBoardFromFile() {
+    /*private boolean loadBoardFromFile() {
         System.out.println("Enter the file name:");
         String fileName = SCANNER.nextLine();
         String filePath = "src/resources/" + fileName + ".txt";
@@ -176,5 +176,5 @@ public class TicTacToeTUI implements View {
             System.out.println("Error loading the file: " + fileName);
             return false;
         }
-    }
+    }*/
 }

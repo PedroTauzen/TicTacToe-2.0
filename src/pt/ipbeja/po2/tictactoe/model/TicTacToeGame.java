@@ -1,6 +1,17 @@
 package pt.ipbeja.po2.tictactoe.model;
 
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import pt.ipbeja.po2.tictactoe.gui.TicTacToeBoard;
+import pt.ipbeja.po2.tictactoe.gui.TicTacToeButton;
+import pt.ipbeja.po2.tictactoe.gui.TicTacToeStart;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Tic Tac Toe board and game logic
@@ -17,12 +28,14 @@ public class TicTacToeGame {
     private Mark[][] board;
     private View view;
     private Position selectedPosition;
-
+    private String path;
+    private List<Position> positions = new ArrayList<>();
+    int countGame = 1;
+    Mark[][] marks;
     private Player currentPlayer;
 
     public TicTacToeGame() {
         this(DEFAULT_SIZE);
-        currentPlayer = Player.X;
     }
 
     public TicTacToeGame(int size) {
@@ -76,7 +89,7 @@ public class TicTacToeGame {
             setMark(currentPlayer.mark(), selectedPosition);
             this.selectedPosition = null;
         }
-        this.currentPlayer = (currentPlayer == Player.X) ? Player.O : Player.X;
+        //this.currentPlayer = (currentPlayer == Player.X) ? Player.O : Player.X;
     }
 
     /**
@@ -116,8 +129,7 @@ public class TicTacToeGame {
      * @return the current player
      */
     public Player getCurrentPlayer() {
-        //return this.turnCounter % 2 == 0 ? Player.X : Player.O;
-        return currentPlayer;
+        return this.turnCounter % 2 == 0 ? Player.X : Player.O;
     }
 
     /**
@@ -303,21 +315,75 @@ public class TicTacToeGame {
         if (view != null) view.onGameWon(player);
     }
 
-    public void initializeBoard(int size) {
-        board = new Mark[size][size];
+    public void fileChooser(Stage stage) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Text files", "*.txt")
+        );
+        File initialDirectory = new File(".");
+        fileChooser.setInitialDirectory(initialDirectory);
+        path = fileChooser.showOpenDialog(stage).getAbsolutePath();
+    }
+
+    public List<String> readFile(String path) {
+        List<String> file = new ArrayList<>();
+        try{
+            file = Files.readAllLines(Paths.get(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+    public String getPath() {
+        return path;
+    };
+
+    public void markPositionBoard(List<String> file, TicTacToeButton[][] buttons) {
+        createBoard();
+        currentPlayer = determineNextPlayer(file);
+
         for (int row = 0; row < size; row++) {
+            String line = file.get(row);
             for (int col = 0; col < size; col++) {
-                board[row][col] = Mark.EMPTY;
+                char mark = line.charAt(col);
+                Position position = new Position(row, col);
+
+                switch (mark) {
+                    case 'X' -> setMark(Mark.X_MARK, position);
+                    case 'O' -> setMark(Mark.O_MARK, position);
+                    case 'E' -> setMark(Mark.EMPTY, position);
+                    default -> System.out.println("Invalid mark" + mark);
+                }
+
+                if (mark != 'E') {
+                    TicTacToeButton button = buttons[row][col];
+                    button.setDisable(true);
+                }
             }
         }
     }
 
-    public void setBoard(Mark[][] board) {
-        this.board = board;
-        notifyBoardChanged(board);
+    private Player determineNextPlayer(List<String> file) {
+        int xCount = 0;
+        int oCount = 0;
+
+        for (String line : file) {
+            for (char mark : line.toCharArray()) {
+                if (mark == 'X') {
+                    xCount++;
+
+                } else if (mark == 'O') {
+                    oCount++;
+                }
+            }
+        }
+
+        Player nextPlayer = (xCount <= oCount) ? Player.X : Player.O;
+        if (xCount + oCount < turnCounter) {
+            nextPlayer = (turnCounter % 2 == 0) ? Player.X : Player.O;
+        }
+        return nextPlayer;
     }
 
-    public void setCurrentPlayer(Player currentPlayer) {
-        this.currentPlayer = currentPlayer;
-    }
 }

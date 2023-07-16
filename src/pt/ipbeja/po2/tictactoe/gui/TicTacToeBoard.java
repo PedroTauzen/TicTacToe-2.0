@@ -23,10 +23,12 @@ public class TicTacToeBoard extends GridPane implements View {
     private final TicTacToeGame game;
     private TicTacToeButton[][] buttons;
 
-    public TicTacToeBoard(TicTacToeGame game) {
+    public TicTacToeBoard(TicTacToeGame game, List<String> file) {
         this.game = game;
         this.game.setGameView(this);
+
         this.game.startGame();
+        this.game.markPositionBoard(file, buttons);
     }
 
     @Override
@@ -99,7 +101,7 @@ public class TicTacToeBoard extends GridPane implements View {
         return new Position(row, col);
     }
 
-    /*class ButtonHandler implements EventHandler<ActionEvent> {
+    class ButtonHandler implements EventHandler<ActionEvent> {
 
         @Override
         public void handle(ActionEvent event) {
@@ -108,6 +110,6 @@ public class TicTacToeBoard extends GridPane implements View {
             TicTacToeBoard.this.game.positionSelected(position);
             // ou apenas game.positionSelected(position);
         }
-    }*/
+    }
 
 }
