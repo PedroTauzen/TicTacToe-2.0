@@ -315,6 +315,10 @@ public class TicTacToeGame {
         if (view != null) view.onGameWon(player);
     }
 
+    public Mark[][] getBoard() {
+        return board;
+    }
+
     public void fileChooser(Stage stage) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(
@@ -339,7 +343,7 @@ public class TicTacToeGame {
         return path;
     };
 
-    public void markPositionBoard(List<String> file, TicTacToeButton[][] buttons) {
+    public void markPositionBoard(List<String> file) {
         createBoard();
         currentPlayer = determineNextPlayer(file);
 
@@ -356,10 +360,6 @@ public class TicTacToeGame {
                     default -> System.out.println("Invalid mark" + mark);
                 }
 
-                if (mark != 'E') {
-                    TicTacToeButton button = buttons[row][col];
-                    button.setDisable(true);
-                }
             }
         }
     }
@@ -385,5 +385,4 @@ public class TicTacToeGame {
         }
         return nextPlayer;
     }
-
 }

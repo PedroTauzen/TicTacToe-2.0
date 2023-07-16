@@ -28,7 +28,7 @@ public class TicTacToeBoard extends GridPane implements View {
         this.game.setGameView(this);
 
         this.game.startGame();
-        this.game.markPositionBoard(file, buttons);
+        this.game.markPositionBoard(file);
     }
 
     @Override
